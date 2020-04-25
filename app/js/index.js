@@ -1,12 +1,16 @@
 let path = require("path");
+let getPixels = require("get-pixels")
 let fs = require("fs");
 
 function processImage() {
-    var filename = document.getElementById("file").value;
-    // var file = path.basename(filename);
-    console.log(filename);
-    // console.log(file);
-    fs.readFile(filename, (f) => {
-        console.log(f);
-    })
+    var files = document.getElementById("file").files;
+    if(files.length > 0) {
+        getPixels(files[0].path, (err, pixels) => {
+            console.log(err);
+            console.log(pixels);
+        });
+    }
+    
+
+    
 }

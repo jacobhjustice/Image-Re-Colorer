@@ -10,5 +10,8 @@
   "license": "ISC",
   "devDependencies": {
     "electron": "^8.2.3"
+  },
+  "dependencies": {
+    "get-pixels": "^3.3.2"
   }
 }
