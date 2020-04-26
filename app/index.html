@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script type="text/javascript" src="js/viewManager.js"></script>
+  <script>var exports = {}</script>
+  <script type="module" src="js/viewManager.js"></script>
 </head>
 <body>
 <div>
-  <input type="file" accept=".gif, .GIF, .jpeg, .JPEG, .png, .PNG, .JPG, .jpg" id="file" onchange="ViewManager.OnChange_FileUpload(this.files)"/>
+  <input type="file" accept=".gif, .GIF, .jpeg, .JPEG, .png, .PNG, .JPG, .jpg" id="file" onchange="module.exports.ViewManager.OnChange_FileUpload(this.files)"/>
 </div>
 </body>
 </html>

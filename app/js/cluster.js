@@ -1,5 +1,5 @@
 const path = require('path');
-const pixel = require(path.resolve( __dirname,"./js/pixel"));
+const Pixel = require( __dirname,"./pixel");
 
 
 class Cluster {
@@ -13,3 +13,5 @@ class Cluster {
         return 
     }
 }
+
+module.exports.Cluster = Cluster;

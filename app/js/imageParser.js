@@ -1,6 +1,6 @@
 const path = require('path');
-const cluster = require(path.resolve( __dirname,"./js/cluster"));
-const pixel = require(path.resolve( __dirname,"./js/pixel"));
+const Cluster = require("./cluster");
+const Pixel = require("./pixel");
 
 class ImageParser {
 
@@ -21,7 +21,11 @@ class ImageParser {
     constructor(pixelData, imageWidth, imageHeight, numberOfColors) {
         this.imageHeight = imageHeight;
         this.imageWidth = imageWidth;
+        this.pixels = [];
+        this.clusters = [];
+        this.k = numberOfColors;
         console.log("START");
+        console.log(new Date())
         for(var i = 0; i < pixelData.length; i+=4) {
             this.pixels.push(new Pixel(
                 pixelData[i],
@@ -31,7 +35,10 @@ class ImageParser {
             ));
 
         }   
-        console.log("FINISH!")     
+
+        console.log("FINISH!");
+        console.log(new Date());
+        console.log(this.pixels);
     }
 
     // // Create initialize k-clusters using random pixels as center and buildClusters
@@ -49,3 +56,6 @@ class ImageParser {
     
     // }
 } 
+
+module.exports.ImageParser = ImageParser
+module.exports.test = "!!!";

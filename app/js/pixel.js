@@ -11,3 +11,5 @@ class Pixel {
         this.alpha = alpha;
     }
 }
+
+module.exports.Pixel = Pixel;
