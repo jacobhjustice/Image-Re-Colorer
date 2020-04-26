@@ -10,6 +10,10 @@ class Pixel {
         this.blue = blue;
         this.alpha = alpha;
     }
+
+    Key() {
+        return this.red + "-" + this.green + "-" + this.blue
+    }
 }
 
 module.exports.Pixel = Pixel;

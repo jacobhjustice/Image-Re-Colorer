@@ -1,5 +1,4 @@
-const path = require('path');
-const Pixel = require( __dirname,"./pixel");
+const Pixel = require("./pixel");
 
 
 class Cluster {
