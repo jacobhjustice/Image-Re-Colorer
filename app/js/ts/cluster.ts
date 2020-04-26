@@ -1,11 +1,13 @@
-class Cluster {
+import { Pixel } from "./pixel";
+
+export class Cluster {
     pixels: Pixel[]
 
     public AddPixel(p: Pixel) {
         this.pixels.push(p);
     }
 
-    public EvaluateCenter() {
+    public EvaluateMidpointPixelValue() {
         return 
     }
 }

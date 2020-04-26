@@ -1,4 +1,4 @@
-class Position {
+export class Position {
     xPos: number;
     yPos: number;
     constructor(x, y) {
