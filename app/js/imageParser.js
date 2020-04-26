@@ -1,24 +1,24 @@
-import { Cluster } from "./cluster"
-import { Pixel } from "./pixel";
-//import { ndarray } from "n"
+const path = require('path');
+const cluster = require(path.resolve( __dirname,"./js/cluster"));
+const pixel = require(path.resolve( __dirname,"./js/pixel"));
 
-export class ImageParser {
+class ImageParser {
 
     // Every pixel will fall into the closest of k Clusters.
     // When the parser finishes, pixels will be recolored based on the "center point" 
     // pixel within its cluster, resulting in a picture using only k-colors.
-    clusters: Cluster[];
-    k: number;
+    clusters;
+    k;
 
     // The original array of pixels is perserved to maintain order to recreate the image.
     // Since classes work as memory references, 
     // any changes to the pixel within the cluster will be reflected here
-    pixels: Pixel[];
+    pixels;
 
-    imageHeight: number;
-    imageWidth: number;
+    imageHeight;
+    imageWidth;
 
-    constructor(pixelData: number[], imageWidth: number, imageHeight: number, numberOfColors: number) {
+    constructor(pixelData, imageWidth, imageHeight, numberOfColors) {
         this.imageHeight = imageHeight;
         this.imageWidth = imageWidth;
         console.log("START");
@@ -34,18 +34,18 @@ export class ImageParser {
         console.log("FINISH!")     
     }
 
-    // Create initialize k-clusters using random pixels as center and buildClusters
-    initializeClusters() {
+    // // Create initialize k-clusters using random pixels as center and buildClusters
+    // initializeClusters() {
 
-    }
+    // }
 
-    // Place pixels within the closest cluster
-    buildClusters() {
+    // // Place pixels within the closest cluster
+    // buildClusters() {
 
-    }
+    // }
 
-    // Evaluate a new central point of the cluster
-    centerClusters() {
+    // // Evaluate a new central point of the cluster
+    // centerClusters() {
     
-    }
+    // }
 } 
