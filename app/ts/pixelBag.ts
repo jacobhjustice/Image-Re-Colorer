@@ -39,4 +39,3 @@ export class PixelBag {
     }
 }
 
-module.exports.PixelBag = PixelBag;

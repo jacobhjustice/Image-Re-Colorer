@@ -17,4 +17,3 @@ export class Cluster {
     }
 }
 
-module.exports.Cluster = Cluster;

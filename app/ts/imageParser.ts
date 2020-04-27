@@ -68,21 +68,19 @@ export class ImageParser {
         console.log(new Date())
     }
 
-    // // Create initialize k-clusters using random pixels as center and buildClusters
-    // initializeClusters() {
+    // Create initialize k-clusters using random pixels as center and buildClusters
+    initializeClusters() {
 
-    // }
+    }
 
-    // // Place pixels within the closest cluster
-    // buildClusters() {
+    // Place pixels within the closest cluster
+    buildClusters() {
 
-    // }
+    }
 
-    // // Evaluate a new central point of the cluster
-    // centerClusters() {
+    // Evaluate a new central point of the cluster
+    centerClusters() {
     
-    // }
+    }
 } 
 
-module.exports.ImageParser = ImageParser
-module.exports.test = "!!!";

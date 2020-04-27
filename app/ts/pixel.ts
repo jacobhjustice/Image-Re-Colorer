@@ -16,4 +16,3 @@ export class Pixel {
     }
 }
 
-module.exports.Pixel = Pixel;
