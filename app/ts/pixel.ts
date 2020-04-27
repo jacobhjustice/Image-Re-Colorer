@@ -1,17 +1,17 @@
-class Pixel {
-    red;
-    green;
-    blue;
-    alpha;
+export class Pixel {
+    red: number;
+    green: number;
+    blue: number;
+    alpha: number;
 
-    constructor(red, green, blue, alpha) {
+    constructor(red: number, green: number, blue: number, alpha: number) {
         this.red = red;
         this.green = green;
         this.blue = blue;
         this.alpha = alpha;
     }
 
-    Key() {
+    Key(): string {
         return this.red + "-" + this.green + "-" + this.blue
     }
 }
