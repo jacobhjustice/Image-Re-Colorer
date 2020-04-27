@@ -6,11 +6,11 @@ import { PixelBag } from "./pixelBag";
 
 export class ImageParser {
 
+    // TODO: reword
     // Every pixel will fall into the closest of k Clusters.
     // When the parser finishes, pixels will be recolored based on the "center point" 
     // pixel within its cluster, resulting in a picture using only k-colors.
     clusters: Cluster[];
-    k: number;
 
     // The original array of pixels is perserved to maintain order to recreate the image.
     // Since classes work as memory references, 
@@ -30,11 +30,7 @@ export class ImageParser {
         this.pixels = [];
         this.pixelBags = new Map<String, PixelBag>();
         this.clusters = [];
-        this.k = numberOfColors;
         
-        let map = [];
-        console.log("START 1")
-        console.log(new Date())
         for(var i = 0; i < pixelData.length; i+=4) {
             var p = new Pixel(
                 pixelData[i],
@@ -50,36 +46,51 @@ export class ImageParser {
                 var bag = new PixelBag(p);
                 this.pixelBags.set(p.Key(), bag);
             }
-        }   
-        console.log("END 1")
-        console.log(new Date())
+        } 
+        
+        this.initializeClusters(numberOfColors);
 
-        console.log(Object.keys(this.pixelBags).length);
-        console.log(this.pixels.length);
-
-        console.log("START 2")
-        console.log(new Date())
-        for(var key in this.pixelBags) {
-            var t = this.pixelBags.get(key)
-            console.log(t);
-        }
-
-        console.log("End 2")
-        console.log(new Date())
     }
 
     // Create initialize k-clusters using random pixels as center and buildClusters
-    initializeClusters() {
+    private initializeClusters(k: number) {
+        for(var i = 0; i < k; i++) {
+            var p = new Pixel(
+                Math.floor(Math.random()*256), 
+                Math.floor(Math.random()*256), 
+                Math.floor(Math.random()*256), 
+                -1
+            );
+            this.clusters.push(new Cluster(p));
+        }
 
+        this.fillClusters();
     }
 
     // Place pixels within the closest cluster
-    buildClusters() {
+    private fillClusters() {
+        this.clusters.forEach((c) => {
+            c.ClearPixelBags();
+        });
+        this.pixelBags.forEach((pb) => {
+            var minimumDistance = Infinity;
+            var minimumCluster: Cluster = this.clusters[0];
+            this.clusters.forEach((c) => {
+                var testDistance = pb.DistanceFromCluster(c);
+                if(testDistance < minimumDistance) {
+                    minimumCluster = c;
+                    minimumDistance = testDistance;
+                }
+            });
 
+            minimumCluster.AddPixelBag(pb)
+        });
+
+        this.centerClusters();
     }
 
     // Evaluate a new central point of the cluster
-    centerClusters() {
+    private centerClusters() {
     
     }
 } 

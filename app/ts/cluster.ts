@@ -1,19 +1,26 @@
 import { Pixel } from "./pixel";
+import { PixelBag } from "./pixelBag";
 
 
 export class Cluster {
-    pixels: Pixel[]
+    pixels: PixelBag[];
+    center: Pixel;
 
-    constructor() {
+    constructor(center: Pixel) {
         this.pixels = [];
+        this.center = center;
     }
 
-    AddPixel(p: Pixel) {
+    AddPixelBag(p: PixelBag) {
         this.pixels.push(p);
     }
 
-    EvaluateMidpointPixelValue() {
-        return 
+    UpdateCenterValue() {
+        this.center = this.center;
+    }
+
+    ClearPixelBags() {
+        this.pixels = [];
     }
 }
 

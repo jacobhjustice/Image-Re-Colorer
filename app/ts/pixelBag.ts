@@ -1,5 +1,5 @@
 import {Pixel} from "./pixel";
-
+import {Cluster} from "./cluster";
 
 // A PixelBag contains a list of all identically colored pixels.
 // This limits the total number of Pixels for calculations
@@ -37,5 +37,9 @@ export class PixelBag {
     AddPixel(pixel: Pixel) {
         this.pixels.push(pixel);
     }
+
+    DistanceFromCluster(other: Cluster): number {
+        return this.value.DistanceFromCluster(other);
+    } 
 }
 
