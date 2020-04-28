@@ -1,17 +1,17 @@
-import { Pixel } from "./pixel";
-import { PixelBag } from "./pixelBag";
+import { PixelColorMapping } from "./pixelColorMapping";
+import { Color } from "./color";
 
 
 export class Cluster {
-    pixels: PixelBag[];
-    center: Pixel;
+    pixels: PixelColorMapping[];
+    center: Color;
 
-    constructor(center: Pixel) {
+    constructor(center: Color) {
         this.pixels = [];
         this.center = center;
     }
 
-    AddPixelBag(p: PixelBag) {
+    AddPixelColorMapping(p: PixelColorMapping) {
         this.pixels.push(p);
     }
 
@@ -25,11 +25,10 @@ export class Cluster {
             totalBlue += pb.value.blue;
         });
 
-        this.center = new Pixel(
+        this.center = new Color(
             Math.floor(totalRed/this.pixels.length),
             Math.floor(totalGreen/this.pixels.length),
-            Math.floor(totalBlue/this.pixels.length),
-            -1
+            Math.floor(totalBlue/this.pixels.length)
         );
 
         return this.center.IsEqual(oldCenter);
