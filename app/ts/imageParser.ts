@@ -69,6 +69,7 @@ export class ImageParser {
 
     // Place pixels within the closest cluster
     private fillClusters() {
+        console.log("Fill!");
         this.clusters.forEach((c) => {
             c.ClearPixelBags();
         });
@@ -86,12 +87,24 @@ export class ImageParser {
             minimumCluster.AddPixelBag(pb)
         });
 
-        this.centerClusters();
+        var wasUpdated = !this.centerClusters();
+
+        if(wasUpdated) {
+            this.fillClusters();
+        }
+        console.log(this.clusters);
+        console.log("FINISHED!")
     }
 
     // Evaluate a new central point of the cluster
     private centerClusters() {
-    
+        console.log("Center!");
+        var wasNotUpdated = true;
+        this.clusters.forEach((c) => {
+            wasNotUpdated = wasNotUpdated && c.UpdateCenterValue();
+        });
+
+        return wasNotUpdated;
     }
 } 
 

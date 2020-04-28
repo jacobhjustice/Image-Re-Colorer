@@ -24,5 +24,11 @@ export class Pixel {
             + Math.pow(this.blue - other.center.blue, 2)
         );
     }
+
+    IsEqual(other: Pixel): boolean {
+        return this.red == other.red 
+            && this.green == other.green
+            && this.blue == other.blue;
+    }
 }
 
