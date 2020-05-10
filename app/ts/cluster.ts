@@ -37,5 +37,13 @@ export class Cluster {
     ClearPixelBags() {
         this.pixels = [];
     }
+
+    Count(): number {
+        var i = 0;
+        this.pixels.forEach((pcm) => {
+            i += pcm.pixels.length;
+        })
+        return i;
+    }
 }
 

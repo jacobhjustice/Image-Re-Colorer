@@ -25,26 +25,24 @@ export class ImageParser {
     imageWidth: number;
 
     constructor(pixelData: number[], imageWidth: number, imageHeight: number, numberOfColors: number) {
+        console.log("total pixels expected:" + (imageHeight*imageWidth))
         this.imageHeight = imageHeight;
         this.imageWidth = imageWidth;
-        //this.pixels = [];
         this.pixels = new Map<String, PixelColorMapping>();
         this.clusters = [];
         this.log("START LOAD")
         for(var i = 0; i < pixelData.length; i+=4) {
-            var xPos = Math.floor(i/4) % imageWidth;
-            var yPos = Math.floor(Math.floor(i/4)/imageHeight);
+            var index = Math.floor(i/4)
+            var xPos = index % imageWidth;
+            var yPos = Math.floor(index/imageWidth);
+
             var color = new Color(
                 pixelData[i],
                 pixelData[i+1],
                 pixelData[i+2]
             );
-            if(pixelData[i+3] != 255) {
-                console.log("ALPHA IFFY")
-            }
 
             var pixel = new Pixel(xPos,yPos);
-           // this.pixels.push(p);
 
             if(this.pixels.has(color.Key())) {
                 this.pixels.get(color.Key())?.AddPixel(pixel);
@@ -56,7 +54,7 @@ export class ImageParser {
 
         this.log("END LOAD")
 
-        
+        //this.testWrite()
         this.initializeClusters(numberOfColors);
 
     }
@@ -68,6 +66,9 @@ export class ImageParser {
                 Math.floor(Math.random()*256), 
                 Math.floor(Math.random()*256), 
                 Math.floor(Math.random()*256)
+                // i == 0 ? 255 : 0,
+                // i == 1 ? 255 : 0,
+                // i == 2 ? 255 : 0
             );
             this.clusters.push(new Cluster(p));
         }
@@ -76,25 +77,33 @@ export class ImageParser {
     }
 
     // Place pixels within the closest cluster
-    private fillClusters() {
-        console.log("Fill!");
+    private fillClusters() {        
+        var m = new Map<any, any>();
         this.clusters.forEach((c) => {
             c.ClearPixelBags();
         });
+        debugger;
+        var p = 0;
         this.pixels.forEach((pcm) => {
-            var minimumDistance = Infinity;
             var minimumCluster: Cluster = this.clusters[0];
-            this.clusters.forEach((c) => {
+            var minimumDistance = pcm.DistanceFromCluster(minimumCluster);
+
+            m.set(pcm.value.Key(), pcm);
+
+            this.clusters.forEach((c, i) => {
+                if(i == 0) {
+                    return;
+                } 
                 var testDistance = pcm.DistanceFromCluster(c);
                 if(testDistance < minimumDistance) {
                     minimumCluster = c;
                     minimumDistance = testDistance;
                 }
             });
-
+            p++;
             minimumCluster.AddPixelColorMapping(pcm);
         });
-
+        
         var wasUpdated = false//!this.centerClusters();
 
         if(wasUpdated) {
@@ -102,8 +111,7 @@ export class ImageParser {
         } else {
             this.writeImage();
         }
-        console.log(this.clusters);
-        console.log("FINISHED!")
+
         
     }
 
@@ -132,18 +140,18 @@ export class ImageParser {
 
         var image = new Jimp(this.imageWidth, this.imageHeight, function(err: string, img: any) {
             var m = new Map<string, number>();
-            
-            self.clusters.forEach((c) => {
-                // TODO: error in same pixel in multiple cluters
-                self.pixels.forEach((pcm) => {
-                    let color = c.center//pcm.value;
-                    pcm.pixels.forEach((p) => {
+            var i = 0;
+            self.clusters.forEach((c, i0) => {
+                let color = c.center;
+
+                c.pixels.forEach((pcm, i1) => { 
+                    pcm.pixels.forEach((p, i2) => {    
                         image.setPixelColor(Jimp.rgbaToInt(color.red,color.green,color.blue,255), 
-                            p.xPos, p.yPos);
-                        //image.setPixelColor(Jimp.rgbaToInt(255,0,0,255), p.xPos, p.yPos)    
+                        p.xPos, p.yPos);
                     });
-                });
+                }); 
             });
+
             
             self.log("END GENERATE")
 
@@ -151,6 +159,24 @@ export class ImageParser {
                 if (err) throw err;
               });
         })
+    }
+
+    private testWrite(pcm: PixelColorMapping[]) {
+        const Jimp = require('jimp');
+        var image = new Jimp(this.imageWidth, this.imageHeight, function(err: string, img: any) {
+
+            pcm.forEach((p) => {
+                p.pixels.forEach((pi) => {
+                    image.setPixelColor(Jimp.rgbaToInt(p.value.red,p.value.green,p.value.blue,255), 
+                                pi.xPos, pi.yPos);
+                });
+            });
+            image.write('test.png', (err: string) => {
+                if (err) throw err;
+              });
+        })
+
+        
     }
 } 
 
