@@ -25,11 +25,13 @@ export class ImageParser {
     imageWidth: number;
 
     constructor(pixelData: number[], imageWidth: number, imageHeight: number, numberOfColors: number) {
-        console.log("total pixels expected:" + (imageHeight*imageWidth))
         this.imageHeight = imageHeight;
         this.imageWidth = imageWidth;
         this.pixels = new Map<String, PixelColorMapping>();
         this.clusters = [];
+
+        var allColors = [];
+
         this.log("START LOAD")
         for(var i = 0; i < pixelData.length; i+=4) {
             var index = Math.floor(i/4)
@@ -47,6 +49,8 @@ export class ImageParser {
             if(this.pixels.has(color.Key())) {
                 this.pixels.get(color.Key())?.AddPixel(pixel);
             } else {
+                allColors.push(color);
+
                 var pcm = new PixelColorMapping(pixel, color);
                 this.pixels.set(color.Key(), pcm);
             }
@@ -55,20 +59,18 @@ export class ImageParser {
         this.log("END LOAD")
 
         //this.testWrite()
-        this.initializeClusters(numberOfColors);
+        this.initializeClusters(numberOfColors, allColors);
 
     }
 
     // Create initialize k-clusters using random pixels as center and buildClusters
-    private initializeClusters(k: number) {
+    private initializeClusters(k: number, colors: Color[]) {
         for(var i = 0; i < k; i++) {
+            var randValue = colors[colors.length - 1 - i];
             var p = new Color(
-                Math.floor(Math.random()*256), 
-                Math.floor(Math.random()*256), 
-                Math.floor(Math.random()*256)
-                // i == 0 ? 255 : 0,
-                // i == 1 ? 255 : 0,
-                // i == 2 ? 255 : 0
+                Math.floor(randValue.red), 
+                Math.floor(randValue.green), 
+                Math.floor(randValue.blue)
             );
             this.clusters.push(new Cluster(p));
         }
@@ -77,12 +79,11 @@ export class ImageParser {
     }
 
     // Place pixels within the closest cluster
-    private fillClusters() {        
+    private fillClusters(currentIteration = 1) {        
         var m = new Map<any, any>();
         this.clusters.forEach((c) => {
             c.ClearPixelBags();
         });
-        debugger;
         var p = 0;
         this.pixels.forEach((pcm) => {
             var minimumCluster: Cluster = this.clusters[0];
@@ -103,33 +104,42 @@ export class ImageParser {
             p++;
             minimumCluster.AddPixelColorMapping(pcm);
         });
-        
-        var wasUpdated = false//!this.centerClusters();
+        this.logClusters();
+        var wasNotUpdated = this.centerClusters();
 
-        if(wasUpdated) {
-            this.fillClusters();
-        } else {
+        if(wasNotUpdated || currentIteration > 100) {
+            this.log("Final iteration count: " + currentIteration)
             this.writeImage();
+        } else {
+            this.fillClusters(++currentIteration);
         }
 
         
     }
 
+    private logClusters() {
+        this.log("Starting cluster log");
+        this.clusters.forEach((c) => {
+            console.log(c.center.Key());
+            console.log(c.pixels.length)
+        });
+    }
+
     // Evaluate a new central point of the cluster
     private centerClusters() {
-        console.log("Center!");
+        this.log("Center!");
         var wasNotUpdated = true;
         this.clusters.forEach((c) => {
             wasNotUpdated = wasNotUpdated && c.UpdateCenterValue();
         });
-
         return wasNotUpdated;
     }
 
     private log(msg: string) {
+        console.log("____________________");
         console.log(new Date());
         console.log(msg);
-        console.log("____________________");
+
     }
 
     private writeImage() {

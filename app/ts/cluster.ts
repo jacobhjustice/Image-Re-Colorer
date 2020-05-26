@@ -18,17 +18,18 @@ export class Cluster {
     // returns true if the value remains the same
     UpdateCenterValue(): boolean {
         var oldCenter = this.center 
-        var totalRed = 0, totalBlue = 0, totalGreen = 0;
+        var totalRed = 0, totalBlue = 0, totalGreen = 0, totalPixels = 0;
         this.pixels.forEach((pb) => {
-            totalRed += pb.value.red;
-            totalGreen += pb.value.green;
-            totalBlue += pb.value.blue;
+            totalRed += (pb.value.red * pb.pixels.length);
+            totalGreen += (pb.value.green * pb.pixels.length);
+            totalBlue += (pb.value.blue * pb.pixels.length);
+            totalPixels += pb.pixels.length;
         });
 
         this.center = new Color(
-            Math.floor(totalRed/this.pixels.length),
-            Math.floor(totalGreen/this.pixels.length),
-            Math.floor(totalBlue/this.pixels.length)
+            Math.floor(totalRed/totalPixels),
+            Math.floor(totalGreen/totalPixels),
+            Math.floor(totalBlue/totalPixels)
         );
 
         return this.center.IsEqual(oldCenter);
