@@ -9,7 +9,11 @@
 </head>
 <body>
 <div>
-  <input type="file" accept=".gif, .GIF, .jpeg, .JPEG, .png, .PNG, .JPG, .jpg" id="file" onchange="module.exports.ViewManager.OnChange_FileUpload(this.files)"/>
-</div>
+  
+    <input type="number" id="kCount" placeholder="# Colors" onchange="module.exports.ViewManager.SetK(this.valueAsNumber)" />
+    <input type="file" accept=".gif, .GIF, .jpeg, .JPEG, .png, .PNG, .JPG, .jpg" id="file" onchange="module.exports.ViewManager.SetFile(this.files)" />
+    <button type="button" onclick="module.exports.ViewManager.OnChange_FileUpload()">Parse</button>
+  
+  </div>
 </body>
 </html>
