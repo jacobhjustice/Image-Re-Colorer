@@ -24,9 +24,9 @@ export class ImageParser {
     // imageHeight: number;
     // imageWidth: number;
 
-    static imageURL: string = "test.png"
+    static imageURL: string = "app/img/test.png"
 
-    static ParseImage(pixelData: number[], imageWidth: number, imageHeight: number, numberOfColors: number) {//: ProcessedImage {
+    static ParseImage(pixelData: number[], imageWidth: number, imageHeight: number, numberOfColors: number): ProcessedImage {
         var pixels = new Map<String, PixelColorMapping>();
         var clusters: Cluster[] = [];
         
@@ -34,8 +34,8 @@ export class ImageParser {
         var clusters = this.initializeClusters(pixels, numberOfColors);
 
         clusters = this.fillClusters(pixels, clusters);
-        var image = this.writeImage(clusters, imageWidth, imageHeight);
-    
+        var processedImage = new ProcessedImage(this.imageURL, clusters, imageWidth, imageHeight);
+        return processedImage;
     }
 
     private static parsePixels(pixelData: number[], imageWidth: number, imageHeight: number): Map<String, PixelColorMapping> {
@@ -131,35 +131,6 @@ export class ImageParser {
             wasNotUpdated = wasNotUpdated && c.UpdateCenterValue();
         });
         return wasNotUpdated;
-    }
-
-    private static async writeImage(clusters: Cluster[], imageWidth: number, imageHeight: number) {//: ProcessedImage {
-        const Jimp = require('jimp');
-        // TODO: type
-
-        var url = this.imageURL;
-
-        var image = new Jimp(imageWidth, imageHeight, function(err: string, img: any) {
-            var m = new Map<string, number>();
-            var i = 0;
-            clusters.forEach((c, i0) => {
-                let color = c.center;
-
-                c.pixels.forEach((pcm, i1) => { 
-                    pcm.pixels.forEach((p, i2) => {    
-                        image.setPixelColor(Jimp.rgbaToInt(color.red,color.green,color.blue,255), 
-                        p.xPos, p.yPos);
-                    });
-                }); 
-            });
-
-        
-            image.write(url, (err: string) => {
-                if (err) throw err;
-                // TODO: Gonna be some weird asyn bugginess here
-                new ProcessedImage(url, clusters);
-              });
-        })
     }
 } 
 
