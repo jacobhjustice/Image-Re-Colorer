@@ -1,4 +1,5 @@
 import { ProcessedImage } from "./processedImage";
+import { Cluster } from "./cluster";
 
 const imageParser = require("./ts/generated/imageParser");
 const processedImage = require("./ts/generated/processedImage");
@@ -20,6 +21,7 @@ class ViewManager {
         var parse = (pixels: number[], w: number, h: number) => {
             this.img = imageParser.ImageParser.ParseImage(pixels, w, h, this.k);
             this.img.WriteImage(this.displayImg)
+            this.generateColorPickerHTML(this.img.clusters);
         }
 
         getPixels(this.path, (err: any, pixels: any) => {
@@ -27,14 +29,6 @@ class ViewManager {
             var imgHeight = pixels.shape[1];
             parse(pixels.data, imgWidth, imgHeight);
         });
-    }
-
-    private displayImg() {
-        console.log("SHOW")
-        var i = document.createElement("img");
-        i.src = "img/test.png"//this.img.url;
-        i.classList.add("parsedImg")
-        document.body.appendChild(i);
     }
 
     SetFile(files: any) {
@@ -46,6 +40,29 @@ class ViewManager {
     SetK(k: number) {
         this.k = k;
     }
+
+    private generateColorPickerHTML(clusters: Cluster[]) {
+        
+        clusters.forEach((c) => {
+            var color = c.center;
+            var hex = "#" + color.red.toString(16) + color.green.toString(16) + color.blue.toString(16);
+            console.log(hex);
+            var i = document.createElement("input");
+            i.type = "color";
+            i.value = hex;
+            document.body.appendChild(i);
+        });
+    }
+
+    private displayImg() {
+        console.log("SHOW")
+        var i = document.createElement("img");
+        i.src = "img/test.png"//this.img.url;
+        i.classList.add("parsedImg")
+        document.body.appendChild(i);
+    }
+
+       
 }
 
 module.exports.ViewManager = new ViewManager();
