@@ -2,16 +2,16 @@ import { Cluster } from "./cluster";
 import { Pixel } from "./pixel";
 import { PixelColorMapping } from "./pixelColorMapping";
 import { Color } from "./color";
+import { ProcessedImage } from "./processedImage";
 // const Pixel = require("./generated/pixel");
 // const PixelBag = require("./generated/pixelBag");
 
 export class ImageParser {
-
     // TODO: reword
     // Every pixel will fall into the closest of k Clusters.
     // When the parser finishes, pixels will be recolored based on the "center point" 
     // pixel within its cluster, resulting in a picture using only k-colors.
-    clusters: Cluster[];
+    //clusters: Cluster[];
 
     // The original array of pixels is perserved to maintain order to recreate the image.
     // Since classes work as memory references, 
@@ -19,20 +19,28 @@ export class ImageParser {
     // pixels: Pixel[];
 
     // The set of all unique PixelColorMappings, indexed with key of the color value, from the set of pixels in the original image.
-    pixels: Map<String, PixelColorMapping>;
+    // pixels: Map<String, PixelColorMapping>;
 
-    imageHeight: number;
-    imageWidth: number;
+    // imageHeight: number;
+    // imageWidth: number;
 
-    constructor(pixelData: number[], imageWidth: number, imageHeight: number, numberOfColors: number) {
-        this.imageHeight = imageHeight;
-        this.imageWidth = imageWidth;
-        this.pixels = new Map<String, PixelColorMapping>();
-        this.clusters = [];
+    static imageURL: string = "test.png"
 
-        var allColors = [];
+    static ParseImage(pixelData: number[], imageWidth: number, imageHeight: number, numberOfColors: number) {//: ProcessedImage {
+        var pixels = new Map<String, PixelColorMapping>();
+        var clusters: Cluster[] = [];
+        
+        var pixels = this.parsePixels(pixelData, imageWidth, imageHeight);
+        var clusters = this.initializeClusters(pixels, numberOfColors);
 
-        this.log("START LOAD")
+        clusters = this.fillClusters(pixels, clusters);
+        var image = this.writeImage(clusters, imageWidth, imageHeight);
+    
+    }
+
+    private static parsePixels(pixelData: number[], imageWidth: number, imageHeight: number): Map<String, PixelColorMapping> {
+        var pixels = new Map<String, PixelColorMapping>();
+
         for(var i = 0; i < pixelData.length; i+=4) {
             var index = Math.floor(i/4)
             var xPos = index % imageWidth;
@@ -46,52 +54,55 @@ export class ImageParser {
 
             var pixel = new Pixel(xPos,yPos);
 
-            if(this.pixels.has(color.Key())) {
-                this.pixels.get(color.Key())?.AddPixel(pixel);
+            if(pixels.has(color.Key())) {
+                pixels.get(color.Key())?.AddPixel(pixel);
             } else {
-                allColors.push(color);
-
                 var pcm = new PixelColorMapping(pixel, color);
-                this.pixels.set(color.Key(), pcm);
+                pixels.set(color.Key(), pcm);
             }
         } 
 
-        this.log("END LOAD")
-
-        //this.testWrite()
-        this.initializeClusters(numberOfColors, allColors);
-
+        return pixels;
     }
 
     // Create initialize k-clusters using random pixels as center and buildClusters
-    private initializeClusters(k: number, colors: Color[]) {
+    private static initializeClusters(pixels: Map<String, PixelColorMapping>, k: number): Cluster[] {
+        var clusters: Cluster[] = [];
+        
+        var colors: String[] = Array.from(pixels.keys());
+        var sample: String[] = [];
+        var randValue: String;
         for(var i = 0; i < k; i++) {
-            var randValue = colors[colors.length - 1 - i];
+            do {
+                var randValue = colors[Math.floor(Math.random() * colors.length)];
+            } while(sample.indexOf(randValue) != -1);
+            sample.push(randValue);
+              
+            var parts = randValue.split("-")
             var p = new Color(
-                Math.floor(randValue.red), 
-                Math.floor(randValue.green), 
-                Math.floor(randValue.blue)
+                Math.floor(parseInt(parts[0])), 
+                Math.floor(parseInt(parts[1])), 
+                Math.floor(parseInt(parts[2]))
             );
-            this.clusters.push(new Cluster(p));
+            clusters.push(new Cluster(p));
         }
-
-        this.fillClusters();
+        return clusters;
     }
 
     // Place pixels within the closest cluster
-    private fillClusters(currentIteration = 1) {        
+    private static fillClusters(pixels: Map<String, PixelColorMapping>, clusters: Cluster[], currentIteration = 1): Cluster[] {        
         var m = new Map<any, any>();
-        this.clusters.forEach((c) => {
+        clusters.forEach((c) => {
             c.ClearPixelBags();
         });
         var p = 0;
-        this.pixels.forEach((pcm) => {
-            var minimumCluster: Cluster = this.clusters[0];
+        pixels.forEach((pcm) => {
+            var minimumCluster: Cluster = clusters[0];
             var minimumDistance = pcm.DistanceFromCluster(minimumCluster);
 
             m.set(pcm.value.Key(), pcm);
 
-            this.clusters.forEach((c, i) => {
+            clusters.forEach((c, i) => {
                 if(i == 0) {
                     return;
                 } 
@@ -104,54 +115,34 @@ export class ImageParser {
             p++;
             minimumCluster.AddPixelColorMapping(pcm);
         });
-        this.logClusters();
-        var wasNotUpdated = this.centerClusters();
+        var wasNotUpdated = this.centerClusters(clusters);
 
         if(wasNotUpdated || currentIteration > 100) {
-            this.log("Final iteration count: " + currentIteration)
-            this.writeImage();
-        } else {
-            this.fillClusters(++currentIteration);
-        }
+            return clusters;
+        } 
 
-        
-    }
-
-    private logClusters() {
-        this.log("Starting cluster log");
-        this.clusters.forEach((c) => {
-            console.log(c.center.Key());
-            console.log(c.pixels.length)
-        });
+        return this.fillClusters(pixels, clusters, ++currentIteration);
     }
 
     // Evaluate a new central point of the cluster
-    private centerClusters() {
-        this.log("Center!");
+    private static centerClusters(clusters: Cluster[]) {
         var wasNotUpdated = true;
-        this.clusters.forEach((c) => {
+        clusters.forEach((c) => {
             wasNotUpdated = wasNotUpdated && c.UpdateCenterValue();
         });
         return wasNotUpdated;
     }
 
-    private log(msg: string) {
-        console.log("____________________");
-        console.log(new Date());
-        console.log(msg);
-
-    }
-
-    private writeImage() {
+    private static async writeImage(clusters: Cluster[], imageWidth: number, imageHeight: number) {//: ProcessedImage {
         const Jimp = require('jimp');
-        var self = this;
         // TODO: type
-        this.log("START GENERATE")
 
-        var image = new Jimp(this.imageWidth, this.imageHeight, function(err: string, img: any) {
+        var url = this.imageURL;
+
+        var image = new Jimp(imageWidth, imageHeight, function(err: string, img: any) {
             var m = new Map<string, number>();
             var i = 0;
-            self.clusters.forEach((c, i0) => {
+            clusters.forEach((c, i0) => {
                 let color = c.center;
 
                 c.pixels.forEach((pcm, i1) => { 
@@ -162,31 +153,13 @@ export class ImageParser {
                 }); 
             });
 
-            
-            self.log("END GENERATE")
-
-            image.write('test.png', (err: string) => {
-                if (err) throw err;
-              });
-        })
-    }
-
-    private testWrite(pcm: PixelColorMapping[]) {
-        const Jimp = require('jimp');
-        var image = new Jimp(this.imageWidth, this.imageHeight, function(err: string, img: any) {
-
-            pcm.forEach((p) => {
-                p.pixels.forEach((pi) => {
-                    image.setPixelColor(Jimp.rgbaToInt(p.value.red,p.value.green,p.value.blue,255), 
-                                pi.xPos, pi.yPos);
-                });
-            });
-            image.write('test.png', (err: string) => {
-                if (err) throw err;
-              });
-        })
-
         
+            image.write(url, (err: string) => {
+                if (err) throw err;
+                // TODO: Gonna be some weird asyn bugginess here
+                new ProcessedImage(url, clusters);
+              });
+        })
     }
 } 
 
