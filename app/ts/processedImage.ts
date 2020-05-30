@@ -12,16 +12,21 @@ export class ProcessedImage {
     imageHeight: number;
     isWritten: boolean;
 
-    constructor(url: string, clusters: Cluster[], imageWidth: number, imageHeight: number ) {
-        this.url = url;
+    constructor(clusters: Cluster[], imageWidth: number, imageHeight: number ) {
+        this.url = "";
         this.clusters = clusters;
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
         this.isWritten = false;
     }
 
+    GenerateURL() {
+        this.url = __dirname + "/img/" + (new Date()).getTime() + ".png";
+    }
+
     WriteImage(cb: Function) {
         const Jimp = require('jimp');
+        this.GenerateURL();
         const url = this.url;
         const clusters = this.clusters;
 
@@ -41,8 +46,9 @@ export class ProcessedImage {
                     });
                 }); 
             });
-
+            
             image.write(url, (err: string) => {
+                
                 onComplete(err);
             });
         });

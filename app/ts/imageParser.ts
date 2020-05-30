@@ -34,7 +34,7 @@ export class ImageParser {
         var clusters = this.initializeClusters(pixels, numberOfColors);
 
         clusters = this.fillClusters(pixels, clusters);
-        var processedImage = new ProcessedImage(this.imageURL, clusters, imageWidth, imageHeight);
+        var processedImage = new ProcessedImage(clusters, imageWidth, imageHeight);
         return processedImage;
     }
 

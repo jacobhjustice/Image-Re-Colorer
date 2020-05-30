@@ -40,7 +40,7 @@ export class Cluster {
         if(hex.length != 7) {
             return; // TODO: error
         }
-        debugger;
+        
         var red = hex.substr(1,2);
         var green = hex.substr(3,2);
         var blue = hex.substr(5,2);

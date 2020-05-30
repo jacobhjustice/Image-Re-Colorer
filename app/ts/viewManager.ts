@@ -20,7 +20,7 @@ class ViewManager {
         const getPixels = require("get-pixels");
         var parse = (pixels: number[], w: number, h: number) => {
             this.img = imageParser.ImageParser.ParseImage(pixels, w, h, this.k);
-            this.img.WriteImage(this.displayImg)
+            this.img.WriteImage(this.getCallbackFunction())
             this.generateColorPickerHTML(this.img.clusters);
         }
 
@@ -55,17 +55,26 @@ class ViewManager {
         });
     }
 
-    private displayImg() {
-        console.log("SHOW")
-        var i = document.createElement("img");
-        var url = this != undefined ? this.img.url : "test.png"
-        i.src = "img/" + url;
+    private getCallbackFunction(): Function {
+        return () => {
+            var wrap = document.getElementById("img-wrapper");
+            wrap?.parentElement?.removeChild(wrap);
 
-        // TODO: Make image name flexible
-        // TODO: Pass image name to system
-        // TODO: Make image name different with each go to surpass browser caching
-        i.classList.add("parsedImg")
-        document.body.appendChild(i);
+            wrap = document.createElement("div");
+            wrap.id = "img-wrapper";
+            console.log("SHOW");
+            
+            var i = document.createElement("img");
+            
+            i.src = this.img.url;
+    
+            // TODO: Make image name flexible
+            // TODO: Pass image name to system
+            // TODO: Make image name different with each go to surpass browser caching
+            i.classList.add("parsedImg")
+            wrap.appendChild(i);
+            document.body.appendChild(wrap);
+        }
     }
 
     // TODO: Stack to keep up with clusters/colors
@@ -85,8 +94,7 @@ class ViewManager {
 
             });
 
-            this.img.url = "test22.png";
-            this.img.WriteImage(this.displayImg);
+            this.img.WriteImage(this.getCallbackFunction());
         }
 
     }
