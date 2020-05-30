@@ -128,7 +128,7 @@ export class ImageParser {
     private static centerClusters(clusters: Cluster[]) {
         var wasNotUpdated = true;
         clusters.forEach((c) => {
-            wasNotUpdated = wasNotUpdated && c.UpdateCenterValue();
+            wasNotUpdated = wasNotUpdated && c.UpdateColorByCenteringPixels();
         });
         return wasNotUpdated;
     }

@@ -33,7 +33,7 @@ export class ProcessedImage {
         
         var image = new Jimp(this.imageWidth, this.imageHeight, function(err: string, img: any) {
             clusters.forEach((c, i0) => {
-                let color = c.center;
+                let color = c.color;
                 c.pixels.forEach((pcm, i1) => { 
                     pcm.pixels.forEach((p, i2) => {    
                         image.setPixelColor(Jimp.rgbaToInt(color.red,color.green,color.blue,255), 

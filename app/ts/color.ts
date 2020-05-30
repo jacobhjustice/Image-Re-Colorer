@@ -2,9 +2,9 @@ import { Cluster } from "./cluster"
 
 
 export class Color {
-    red: number;
-    green: number;
-    blue: number;
+    readonly red: number;
+    readonly green: number;
+    readonly blue: number;
 
     constructor(red: number, green: number, blue: number) {
         this.red = red;
@@ -18,9 +18,9 @@ export class Color {
 
     DistanceFromCluster(other: Cluster): number {
         return Math.sqrt(
-            Math.pow(this.red - other.center.red, 2)
-            + Math.pow(this.green - other.center.green, 2)
-            + Math.pow(this.blue - other.center.blue, 2)
+            Math.pow(this.red - other.color.red, 2)
+            + Math.pow(this.green - other.color.green, 2)
+            + Math.pow(this.blue - other.color.blue, 2)
         );
     }
 
@@ -28,5 +28,12 @@ export class Color {
         return this.red == other.red 
             && this.green == other.green
             && this.blue == other.blue;
+    }
+
+    HexColor(): string {
+        return "#" + 
+            this.red.toString(16) + 
+            this.green.toString(16) + 
+            this.blue.toString(16);
     }
 }

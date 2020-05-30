@@ -43,23 +43,52 @@ class ViewManager {
 
     private generateColorPickerHTML(clusters: Cluster[]) {
         
-        clusters.forEach((c) => {
-            var color = c.center;
-            var hex = "#" + color.red.toString(16) + color.green.toString(16) + color.blue.toString(16);
+        clusters.forEach((c, i) => {
+            var hex = c.HexColor();
             console.log(hex);
-            var i = document.createElement("input");
-            i.type = "color";
-            i.value = hex;
-            document.body.appendChild(i);
+            var img = document.createElement("input");
+            img.type = "color";
+            img.classList.add("clusterColor")
+            img.value = hex;
+            img.dataset["cluster"] = "" + i;
+            document.body.appendChild(img);
         });
     }
 
     private displayImg() {
         console.log("SHOW")
         var i = document.createElement("img");
-        i.src = "img/test.png"//this.img.url;
+        var url = this != undefined ? this.img.url : "test.png"
+        i.src = "img/" + url;
+
+        // TODO: Make image name flexible
+        // TODO: Pass image name to system
+        // TODO: Make image name different with each go to surpass browser caching
         i.classList.add("parsedImg")
         document.body.appendChild(i);
+    }
+
+    // TODO: Stack to keep up with clusters/colors
+    public OnChange_ClusterColor() {
+        var elements = document.getElementsByClassName("clusterColor");
+        var changedIndex = [];
+        var clusters = this.img.clusters;
+        if(elements != null) {
+            elements.forEach((e) => {
+                var clusterIndex = parseInt(e.dataset["cluster"]);
+                var hex = e.value;
+                
+                var current = clusters[clusterIndex];
+                if(current.HexColor() != hex) {
+                    current.UpdateColorByHexCode(hex); // TODO some indicator
+                }
+
+            });
+
+            this.img.url = "test22.png";
+            this.img.WriteImage(this.displayImg);
+        }
+
     }
 
        

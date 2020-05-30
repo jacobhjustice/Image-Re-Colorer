@@ -13,7 +13,7 @@
     <input type="number" id="kCount" placeholder="# Colors" onchange="module.exports.ViewManager.SetK(this.valueAsNumber)" />
     <input type="file" accept=".gif, .GIF, .jpeg, .JPEG, .png, .PNG, .JPG, .jpg" id="file" onchange="module.exports.ViewManager.SetFile(this.files)" />
     <button type="button" onclick="module.exports.ViewManager.OnChange_FileUpload()">Parse</button>
-  
+    <button type="button" onclick="module.exports.ViewManager.OnChange_ClusterColor()">re-parse</button>
   </div>
 </body>
 </html>
